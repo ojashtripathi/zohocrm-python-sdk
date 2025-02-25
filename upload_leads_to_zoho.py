@@ -37,10 +37,14 @@ def validate_data(df):
     # Validate Mobile numbers (e.g., must be 10 digits)
     for index, row in df.iterrows():
         mobile = row.get('Mobile')
-        if isinstance(mobile, str) and len(mobile) == 10 and mobile.isdigit():
-            df.at[index, 'Mobile'] = mobile
+        if isinstance(mobile, str):
+            if len(mobile) == 10 and mobile.isdigit():
+                df.at[index, 'Mobile'] = mobile
+            else:
+                print(f"Invalid Mobile number at row {index}: {mobile} (Reason: not 10 digits or contains non-digit characters)")
+                df.at[index, 'Mobile'] = None  # Set invalid data to None or handle as needed
         else:
-            print(f"Invalid Mobile number at row {index}: {mobile}")
+            print(f"Invalid Mobile number at row {index}: {mobile} (Reason: not a string)")
             df.at[index, 'Mobile'] = None  # Set invalid data to None or handle as needed
 
     # Check for mandatory fields
