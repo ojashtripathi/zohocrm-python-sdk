@@ -6,7 +6,7 @@ from tkinter import filedialog
 
 # Constants
 ZOHO_API_URL = 'https://www.zohoapis.in/crm/v2/Leads/upsert'
-ACCESS_TOKEN = '1000.83333953197cd6565e12f3532bd4fd06.bb4725a29fe74eefb0b8671f9a3b64b1'
+ACCESS_TOKEN = '1000.6e6c903f21bac03809c4c49aebb19041.6db1d7cfb7f410e1bdf758324096906c'
 BATCH_SIZE = 100
 
 # Function to upload a batch of leads to Zoho CRM
@@ -34,12 +34,12 @@ def select_file():
 
 # Function to validate data
 def validate_data(df):
-    # Validate Mobile numbers (e.g., must be 10 digits without country code)
+    # Validate Mobile numbers (e.g., must be 10 digits)
     for index, row in df.iterrows():
         mobile = row.get('Mobile')
-        if isinstance(mobile, str) and mobile.startswith('91') and len(mobile) == 12:
-            mobile = mobile[2:]  # Remove country code
-        if not isinstance(mobile, str) or not mobile.isdigit() or len(mobile) != 10:
+        if isinstance(mobile, str) and len(mobile) == 10 and mobile.isdigit():
+            df.at[index, 'Mobile'] = mobile
+        else:
             print(f"Invalid Mobile number at row {index}: {mobile}")
             df.at[index, 'Mobile'] = None  # Set invalid data to None or handle as needed
 
@@ -52,7 +52,10 @@ def validate_data(df):
     # Validate Owner field (must be a valid bigint)
     for index, row in df.iterrows():
         owner = row.get('Owner')
-        if not pd.isna(owner) and not isinstance(owner, int):
+        try:
+            owner_id = int(owner)
+            df.at[index, 'Owner'] = owner_id
+        except (ValueError, TypeError):
             print(f"Invalid Owner at row {index}: {owner}")
             df.at[index, 'Owner'] = None  # Set invalid data to None or handle as needed
 
