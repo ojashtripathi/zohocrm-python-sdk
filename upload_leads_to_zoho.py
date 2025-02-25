@@ -36,15 +36,11 @@ def select_file():
 def validate_data(df):
     # Validate Mobile numbers (e.g., must be 10 digits)
     for index, row in df.iterrows():
-        mobile = row.get('Mobile')
-        if isinstance(mobile, str):
-            if len(mobile) == 10 and mobile.isdigit():
-                df.at[index, 'Mobile'] = mobile
-            else:
-                print(f"Invalid Mobile number at row {index}: {mobile} (Reason: not 10 digits or contains non-digit characters)")
-                df.at[index, 'Mobile'] = None  # Set invalid data to None or handle as needed
+        mobile = str(row.get('Mobile')).strip()
+        if len(mobile) == 10 and mobile.isdigit():
+            df.at[index, 'Mobile'] = mobile
         else:
-            print(f"Invalid Mobile number at row {index}: {mobile} (Reason: not a string)")
+            print(f"Invalid Mobile number at row {index}: {mobile} (Reason: not 10 digits or contains non-digit characters)")
             df.at[index, 'Mobile'] = None  # Set invalid data to None or handle as needed
 
     # Check for mandatory fields
@@ -74,7 +70,7 @@ def main():
         return
 
     # Read the Excel file
-    df = pd.read_excel(excel_file_path)
+    df = pd.read_excel(excel_file_path, dtype=str)
 
     # Validate data
     df = validate_data(df)
